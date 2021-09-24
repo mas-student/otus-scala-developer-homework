@@ -101,6 +101,8 @@ class UserDaoSlickImplTest extends AnyFreeSpec
             val withOtherLastName = users1.filterNot(_.lastName == lastName)
             val withLastName      = users2.map(_.copy(lastName = lastName))
 
+            dao.deleteAll().futureValue
+
             withOtherLastName.foreach(dao.createUser(_).futureValue)
             val createdWithLasName = withLastName.map(dao.createUser(_).futureValue)
 
@@ -111,6 +113,9 @@ class UserDaoSlickImplTest extends AnyFreeSpec
     "findAll" in {
       forAll { users: Seq[User] =>
         val dao = new UserDaoSlickImpl(db)
+
+        dao.deleteAll().futureValue
+
         val createdUsers = users.map(dao.createUser(_).futureValue)
 
         dao.findAll().futureValue.toSet shouldBe createdUsers.toSet
